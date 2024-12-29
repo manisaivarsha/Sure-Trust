@@ -1,0 +1,206 @@
+--1)
+select c.CountryName, cont.Continent
+from Countries c
+join Continents cont on c.Continent = cont.ContID
+order by cont.Continent;
+
+--2)
+select cont.Continent, count(c.CountryID) 
+from Continents cont
+left join Countries c on c.Continent = cont.ContID
+group by cont.Continent;
+--3)
+select c.CountryName
+from Countries c
+left join Car_Makers cm on c.CountryID = cm.Country
+where cm.ID is null;
+--4)
+select c.countryname, cm.fullname
+from countries c
+left join car_makers cm on cm.country = c.countryid
+where cm.country = 4;
+--5)
+select c.countryname, cm.fullname
+from countries c
+left join car_makers cm on cm.country = c.countryid
+where cm.country = 1  or cm.country = 3;
+--6)
+select cm.maker,c.countryname, co.continent
+from car_makers cm
+join countries c ON cm.country = c.countryid
+join continents co ON c.continent= co.contid
+where cm.maker = 'volvo';
+--7)
+select cm.fullname, md.model
+from model_details md
+join car_makers cm on md.maker = cm.id
+where cm.fullname = 'Ford Motor Company';
+
+--8)
+select c.countryname, COUNT(md.modelid) 
+from car_makers cm
+join countries c ON cm.country = c.countryid
+join model_details md ON cm.id = md.maker
+where c.countryname = 'germany'
+group by c.countryname;
+
+
+--9
+select c.countryname,  md.model, cm.fullname , cm.id 
+from car_makers cm
+join countries c on cm.country = c.countryid
+join model_details md on cm.id = md.maker
+where c.countryname = 'japan';
+
+--10)
+select
+min(cd.mpg) as Min_MPG, min(cd.mpg) as Max_MPG,
+min(cd.cylinders) as Min_Cylinders, MAX(cd.cylinders) as Max_Cylinders,
+min(cd.edispl) as Min_Edispl, MAX(cd.edispl) as Max_Edispl,
+min(cd.horsepower) as Min_Horsepower, MAX(cd.horsepower) as Max_Horsepower,
+min(cd.weight) as Min_Weight, MAX(cd.weight) as Max_Weight,
+min(cd.accel) as Min_Accel, MAX(cd.accel) as Max_Accel,
+cm.fullname, cy.countryname, ct.continent
+from car_details cd 
+left join car_names cn 
+on cd.id = cn.id 
+left join model_details md 
+on cn.model = md.model 
+left join car_makers cm 
+on md.maker = cm.id 
+left join countries cy 
+on cm.country = cy.countryid 
+left join continents ct 
+on cy.continent = ct.contid
+group by  
+grouping sets (
+(cn.model, cm.fullname, cy.countryname, ct.continent),
+()
+);
+
+
+--11)
+select year, count(*) as total_cars
+from car_details c
+group by year
+order by total_cars desc;
+
+--12)
+select year, count(*) 
+from car_details c
+group by year
+order by 2 asc;
+
+--13)
+-----a) Mpg
+select year , min(mpg) , max(mpg) , avg(mpg) 
+from car_details
+group by year
+order by 1;
+
+-----b) Cylinders
+select year , min(Cylinders) , max(cylinders) , avg(cylinders) 
+from car_details
+group by year
+order by 1;
+
+-----c) Edispl
+select year , min(edispl) , max(edispl) , avg(edispl) 
+from car_details
+group by year
+order by 1;
+
+-----d) Horsepower
+select year , min(horsepower) , max(horsepower) , avg(horsepower) 
+from car_details
+group by year
+order by 1;
+
+-----e) Weight
+select year , min(weight) , max(weight) , avg(weight) 
+from car_details
+group by year
+order by 1;
+
+-----f) Accel
+select year , min(accel) , max(accel) , avg(accel) 
+from car_details
+group by year
+order by 1;
+
+--14)
+--CALCULATION FOR HORSEPOWER
+select avg(horsepower) , median(horsepower) , stddev(horsepower) 
+from car_details;
+--CALCULATION FOR WEIGHT
+select avg(weight) , median(weight) , stddev(weight) 
+from car_details;
+--CALCULATION FOR ACCEL
+select avg(accel) , median(accel) , stddev(accel) 
+from car_details;
+15)
+     -----------------                     -----------------                 -------------          ---------------           ---------------
+    (      CONTID     )                  (     CONTINENT    )               ( COUNTRYID  )         ( COUNTRYNAME   )         (   CONTINENT   )
+     -----------------                     -----------------                 -------------           --------------           ----------------
+                 \                       /                                               \                   |                    |
+                  \                     /                                                 \                  |                    |
+                   \                   /                                                   --------------\   |       /-------------
+                    --------------------                                                               ---------------
+                    |  continents      |------------------- /\-----------------------------------------| countries    |
+                    -------------------                     \/                                          ---------------
+                                                                                                              |
+                                                                                                              |
+                               --------------------------------------/\----------------------------------------
+                              |                                      \/
+                              |
+                              |
+                              |
+                              |
+                              |   
+    -----------------         |           -----------------                 -------------          ---------------           ---------------
+    (    MAKER       )        |         (    FULLNAME       )               ( MODELID	  )         ( MAKER       )         (    MODEL      )
+     -----------------        |            -----------------                 -------------           --------------           ----------------
+                 \            |          /                                               \                   |                    |
+                  \           |         /                                                 \                  |                    |
+                   \          |        /                                                   --------------\   |       /-------------
+                    --------------------                                                               ---------------
+                    | car_makers       |-\ ------------------- /\--------------------------------------|model_details |
+                    -------------------   \                    \/                                       ---------------
+                    /         |            \                                                                  |
+                   /          |             \                                                                 |
+                  /           |              \                                                                |
+     -----------------        |            -----------------                                                  | 
+    (   ID           )        |         (   COUNTRY         )                                                 |
+     -----------------        |            -----------------                                                  |
+                             /\ ------------------------------------------------------------------------------|-----                                                                   
+                             \/                                                                               |    |
+                              |                                                                               |    |
+                              |                                                                               |    |
+                              |                                    /\------------------------------------------    | 
+                              ------------------------------------ \/                                              | 
+                              |                                                                                    |----   
+                              |                                                                                         |
+     -----------------        |            -----------------                 -------------          ---------------     |      ---------------
+    (    MODEL        )       |           (     DESCR        )               ( ID          )         ( MPG         )    |     (   CYLINDERS   )
+     -----------------        |             -----------------                 -------------           --------------    |       ----------------
+                 \            |          /                                               \                   |    ------|         |
+                  \           |         /                                                 \                  |    |               |
+                   \          |        /                                                   --------------\   |    |  /-------------
+                    --------------------                                                               ---------------
+                    |  car_names       |------------------- /\----------------------------------------- |car_details  |----------
+                    -------------------                     \/                                   /----/ -----------------\      \   
+                       /                                                                 /------//              |         |      \
+                      /                                                                 /       /               |         |       \
+                     /                                                                 /       |                |         |        \
+                    /                                                                 /        |                |         |         \
+     -----------------                                                       -------------     |     ---------------      |     ---------------
+    (   ID           )                                                      (EDISPL       )    |    ( HORSEPOWER   )      |   ( WEIGHT        )
+     -----------------                                                       -------------     |      --------------      |    ----------------
+                                                                                               |                          |
+                                                                                       ---------------              ----------------
+                                                                                      (    ACCEL      )             (  YEAR         )
+                                                                                       ---------------              ----------------
+
+
+
+
